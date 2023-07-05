@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Login\CreateLoginRequest;
 use App\Http\Requests\Login\LoginRequest;
 use App\Http\Resources\User\UserResource;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,7 +43,25 @@ class AuthController extends Controller
     public function store(CreateLoginRequest $request)
     {
         $data = $request->validated();
-        return $data;
+
+        $user = User::firstOrCreate(
+            ['email' => $data['email']],
+            [
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => $data['password']
+            ]
+        );
+
+        if (!$user->wasRecentlyCreated) {
+            return response([
+                'message' => 'Email já utilizado'
+            ]);
+        }
+
+        return \response([
+            'message' => 'Usuário cadastrado'
+        ]);
     }
 
     /**
