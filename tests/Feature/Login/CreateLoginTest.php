@@ -11,15 +11,26 @@ class CreateLoginTest extends TestCase
     /**
      * A basic feature test example.
      */
-    public function test_example(): void
+    public function test_create_login_not_exist(): void
+    {
+        $response = $this->post('/api/create-account', [
+            'name' => 'teste',
+            'email' => 'teste@example.com',
+            'password' => '12345678',
+            'confirmPassword' => '12345678'
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_create_login_exist(): void 
     {
         $response = $this->post('/api/create-account', [
             'name' => 'lucas',
-            'password' => '123456',
-            'confirmPassword' => '123456'
+            'email' => 'ted45@example.org',
+            'password' => '12345678',
+            'confirmPassword' => '12345678'
         ]);
-
-        $response->dump();
 
         $response->assertStatus(200);
     }
