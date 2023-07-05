@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Login;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Password;
 
 class LoginRequest extends FormRequest
 {
@@ -23,6 +24,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'max:100']
         ];
     }
