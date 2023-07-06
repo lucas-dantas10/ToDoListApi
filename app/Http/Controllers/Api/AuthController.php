@@ -23,8 +23,8 @@ class AuthController extends Controller
 
         if (!Auth::attempt($credentials)) {
             return \response([
-                "message" => "Usuário ou Senha incorreto"
-            ]);
+                "message" => "Usuário ou Senha está incorreto"
+            ], 422);
         }
 
         $user = $request->user();
@@ -55,8 +55,8 @@ class AuthController extends Controller
 
         if (!$user->wasRecentlyCreated) {
             return response([
-                'message' => 'Email já utilizado'
-            ]);
+                'message' => 'Email já está sendo utilizado'
+            ], 422);
         }
 
         return \response([
@@ -64,12 +64,11 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function getCurrentUser()
     {
-        //
+        $user = Auth::user();
+
+        return new UserResource($user);
     }
 
     /**
