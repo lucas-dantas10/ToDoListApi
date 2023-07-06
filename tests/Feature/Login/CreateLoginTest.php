@@ -32,6 +32,6 @@ class CreateLoginTest extends TestCase
             'confirmPassword' => '12345678'
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(422);
     }
 }
