@@ -29,4 +29,17 @@ class CreateLoginRequest extends FormRequest
             'confirmPassword' => ['required', 'same:password', Password::min(8)]
         ];
     }
+
+    public function messages(): array 
+    {
+        return [
+            'name.required' => 'O campo de nome é obrigatório',
+            'name.max' => 'Foi excedido o limite de caracteres no nome',
+            'email.required' => 'O campo de email é obrigatório',
+            'email.max' => 'Foi excedido o limite de caracteres no email',
+            'password.min' => 'O campo de senha deve ter pelo meno 8 caracteres',
+            'confirmPassword.min' => 'O campo de senha deve ter pelo meno 8 caracteres',
+            'confirmPassword.same' => 'A senha de confirmação deve ser igual'
+        ];
+    }
 }
