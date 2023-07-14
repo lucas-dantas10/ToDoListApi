@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Category\CategoryController;
+use App\Http\Controllers\Api\Task\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -11,7 +12,8 @@ Route::post('create-account', [AuthController::class, 'store'])->name("login.sto
 Route::middleware('auth:sanctum')->group(function() {
     Route::get('current-user', [AuthController::class, 'getCurrentUser'])->name('current.user');
 
-    Route::get('categories', [CategoryController::class, 'index'])->name('category');
+    Route::resource('category', CategoryController::class);
+    Route::resource('task', TaskController::class);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
