@@ -11,7 +11,9 @@ class Tasks extends Model
 {
     use HasFactory;
 
-    protected $fillables = ['title', 'description', 'status_task', 'iduser', 'idcategory', 'created_at', 'updated_at'];
+    protected $fillable = [
+        'title', 'description', 'status_task', 'iduser', 'dtInicio', 'idcategory', 'created_at'
+    ];
 
     public function user(): BelongsTo
     {
@@ -20,6 +22,6 @@ class Tasks extends Model
 
     public function category(): HasOne
     {
-        return $this->hasOne(Category::class, 'idcategory');
+        return $this->hasOne(Category::class, 'id', 'idcategory')->withDefault();
     }
 }
