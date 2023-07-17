@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('description');
+            $table->dateTime('dtInicio');
             $table->boolean('status_task');
             $table->foreignIdFor(User::class, 'iduser');
             $table->foreignIdFor(Category::class, 'idcategory');
