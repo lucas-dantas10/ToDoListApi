@@ -14,8 +14,9 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::resource('category', CategoryController::class);
     Route::resource('task', TaskController::class);
+    Route::post('tasks/filter', [TaskController::class, 'filterByDate'])->name('tasks.filter');
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
