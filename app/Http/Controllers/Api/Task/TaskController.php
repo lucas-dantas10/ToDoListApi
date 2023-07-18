@@ -7,7 +7,6 @@ use App\Http\Requests\Task\TaskRequest;
 use App\Http\Resources\Task\TaskResource;
 use App\Models\Tasks;
 use Carbon\Carbon;
-use Illuminate\Console\View\Components\Task;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -28,12 +27,22 @@ class TaskController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function filterByDate(Request $request) 
     {
-        //
+        $dateRequest = $request->validate([
+            'date' => 'date_format:Y-m-d'
+        ]);
+
+        $tasks = Tasks::query();
+
+        $currentDate = Carbon::now()->toDateString();
+        if ($dateRequest['date'] === $currentDate) {
+            $data = $tasks->where('dtInicio', 'like', "%{$currentDate}%")->with('category')->get();
+
+            return \response([
+                'tasks' => TaskResource::collection($data)
+            ]);
+        }
     }
 
     /**
@@ -72,6 +81,14 @@ class TaskController extends Controller
             'message' => 'Tarefa Criada',
             'task' => new TaskResource($result)
         ]);
+    }
+
+     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        \dd('oi');
     }
 
     /**
