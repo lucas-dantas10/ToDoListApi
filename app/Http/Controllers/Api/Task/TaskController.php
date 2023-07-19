@@ -7,6 +7,7 @@ use App\Http\Requests\Task\TaskRequest;
 use App\Http\Resources\Task\TaskResource;
 use App\Models\Tasks;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -30,19 +31,52 @@ class TaskController extends Controller
     public function filterByDate(Request $request) 
     {
         $dateRequest = $request->validate([
-            'date' => 'date_format:Y-m-d'
+            'date' => 'nullable|date_format:Y-m-d'
         ]);
 
         $tasks = Tasks::query();
 
+        if (is_null($dateRequest['date'])) {
+
+            $data = $tasks->where('status_task', '=', true)
+                ->orderBy('title', 'desc')    
+                ->get();
+
+            return response([
+                'tasks' => TaskResource::collection($data)
+            ]);
+        }
+
         $currentDate = Carbon::now()->toDateString();
+        $subDate = Carbon::now()->subDay()->toDateString();
+
         if ($dateRequest['date'] === $currentDate) {
             $data = $tasks->where('dtInicio', 'like', "%{$currentDate}%")->with('category')->get();
+
+            if ($this->notTaskInDay($data)) {
+                return \response([
+                    'message' => 'Você não tem tarefa no dia selecionado'
+                ], 422);
+            }
 
             return \response([
                 'tasks' => TaskResource::collection($data)
             ]);
         }
+
+        // if ($dateRequest['date'] === $subDate) {
+        //     $data = $tasks->where('dtInicio', 'like', "%{$subDate}%")->get();
+
+        //     if ($this->notTaskInDay($data)) {
+        //         return \response([
+        //             'message' => 'Você não tem tarefa no dia selecionado'
+        //         ], 422);
+        //     }
+
+        //     return response([
+        //         'tasks' => TaskResource::collection($data)
+        //     ]);
+        // }
     }
 
     /**
@@ -81,6 +115,17 @@ class TaskController extends Controller
             'message' => 'Tarefa Criada',
             'task' => new TaskResource($result)
         ]);
+    }
+
+
+    private function notTaskInDay(Collection $date)
+    {
+        if (sizeof($date) == 0) {
+            return true;
+        } else {
+            return \false;
+        }
+        
     }
 
      /**
