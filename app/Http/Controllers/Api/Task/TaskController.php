@@ -36,17 +36,6 @@ class TaskController extends Controller
 
         $tasks = Tasks::query();
 
-        if (is_null($dateRequest['date'])) {
-
-            $data = $tasks->where('status_task', '=', true)
-                ->orderBy('title', 'desc')    
-                ->get();
-
-            return response([
-                'tasks' => TaskResource::collection($data)
-            ]);
-        }
-
         $currentDate = Carbon::now()->toDateString();
         $subDate = Carbon::now()->subDay()->toDateString();
 
@@ -64,19 +53,19 @@ class TaskController extends Controller
             ]);
         }
 
-        // if ($dateRequest['date'] === $subDate) {
-        //     $data = $tasks->where('dtInicio', 'like', "%{$subDate}%")->get();
+        if ($dateRequest['date'] === $subDate) {
+            $data = $tasks->where('dtInicio', 'like', "%{$subDate}%")->get();
 
-        //     if ($this->notTaskInDay($data)) {
-        //         return \response([
-        //             'message' => 'Você não tem tarefa no dia selecionado'
-        //         ], 422);
-        //     }
+            if ($this->notTaskInDay($data)) {
+                return \response([
+                    'message' => 'Você não tem tarefa no dia selecionado'
+                ], 422);
+            }
 
-        //     return response([
-        //         'tasks' => TaskResource::collection($data)
-        //     ]);
-        // }
+            return response([
+                'tasks' => TaskResource::collection($data)
+            ]);
+        }
     }
 
     /**
