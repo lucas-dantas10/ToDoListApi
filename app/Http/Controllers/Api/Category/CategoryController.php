@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Category;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\CategoryRequest;
+use App\Http\Resources\Category\CategoryCreatedResource;
 use App\Http\Resources\Category\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -19,18 +21,43 @@ class CategoryController extends Controller
         return CategoryResource::collection($query);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
+    {
+        $data = $request->validated();
+
+        $category = Category::firstOrCreate([
+            'name' => $data['name']
+        ], [
+            'name' => $data['name'],
+            'user_id' => auth()->user()->id,
+            'icon' => $data['icon'],
+            'color' => $data['color'],
+            'status_category' => true
+        ]);
+
+        // \dd($category);
+
+        if (!$category->wasRecentlyCreated) {
+            return \response([
+                'message' => 'Você ja possui esta categoria'
+            ], 422);
+        }
+
+        return response([
+            'category' => new CategoryCreatedResource($category),
+            'message' => 'Categoria criada!'
+        ]);
+
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
         //
     }
