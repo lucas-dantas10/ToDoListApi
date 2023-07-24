@@ -68,6 +68,29 @@ class TaskController extends Controller
         }
     }
 
+    public function filterByName(Request $request)
+    {
+        $data = $request->validate([
+            'taskSearch' => ['max:150']
+        ]);
+
+        $titleTask = $data['taskSearch'];
+
+        $query = Tasks::query()
+            ->where("title", "like", "%{$titleTask}%")
+            ->get();
+
+        if (is_null($query)) {
+            return response([
+                'message' => 'Não existe tarefa com esse nome'
+            ], 422);
+        }
+
+        return response([
+            'tasks' => TaskResource::collection($query)
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
