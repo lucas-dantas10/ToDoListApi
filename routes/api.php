@@ -13,10 +13,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('current-user', [AuthController::class, 'getCurrentUser'])->name('current.user');
 
     Route::resource('category', CategoryController::class);
+
     Route::resource('task', TaskController::class);
     Route::post('tasks/filter', [TaskController::class, 'filterByDate'])->name('tasks.filter');
+    Route::post('tasks/filter/name', [TaskController::class, 'filterByName'])->name('categories.filter.name');
 });
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
