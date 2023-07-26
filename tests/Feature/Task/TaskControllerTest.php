@@ -22,7 +22,7 @@ class TaskControllerTest extends TestCase
         $this->assertIsArray($response['tasks']);
     }
 
-    public function test_return_filter_of_tasks_at_today_in_array(): void
+    public function test_return_filter_of_tasks_at_today_in_array_if_have_not_task_return_message(): void
     {
         $this->do_login_user_for_get_token();
 
@@ -30,8 +30,55 @@ class TaskControllerTest extends TestCase
             'date' => Carbon::now()->toDateString(),
         ]);
 
+        if (isset($response['message'])) {
+            $response->assertStatus(422);
+            return;
+        }
+
         $response->assertStatus(200);
         $this->assertIsArray($response['tasks']);
+    }
+
+    public function test_return_filter_of_tasks_with_name_in_array_if_have_not_tasks_return_message(): void 
+    {
+        $this->do_login_user_for_get_token();
+
+        $response = $this->post('/api/tasks/filter/name', [
+            'taskSearch' => 'Teste'
+        ]);
+
+        if (isset($response['message'])) {
+            $response->assertStatus(422);
+            return;
+        }
+
+        $response->assertStatus(200);
+        $this->assertIsArray($response['tasks']);
+    }
+
+    public function test_store_task_and_return_task_in_array_if_exist_task_return_message(): void
+    {
+        $this->do_login_user_for_get_token();
+
+        $response = $this->post('/api/task', [
+            'title' => 'Test TDD',
+            'description' => 'testando store',
+            'date' => Carbon::now()->format("Y-m-d H:i:s"),
+            'category' => [
+                'id' => 1,
+                'name' => 'Trabalho',
+                'icon' => 'briefcase',
+                'color' => '#FF9680' 
+            ],
+        ]);
+
+        if (isset($response['message']) && !isset($response['task'])) {
+            $response->assertStatus(422);
+            return;
+        }
+
+        $response->assertStatus(200);
+        $this->assertIsArray($response['task']);
     }
 
     private function do_login_user_for_get_token()
