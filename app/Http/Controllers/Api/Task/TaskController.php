@@ -17,8 +17,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Tasks::where('status_task', true)
-            ->where('iduser', auth()->user()->id)
+        $tasks = Tasks::where('iduser', auth()->user()->id)   
             ->with('category')
             ->orderBy('title', 'desc')
             ->get();
@@ -105,17 +104,12 @@ class TaskController extends Controller
             'description' => $task['description'],
             'dtInicio' => $task['date'],
             'iduser' => auth()->user()->id,
-            'status_task' => true,
+            'status_task' => false,
             'idcategory' => $task['category']['id'],
             'created_at' => Carbon::now()
         ]);
 
-        $result = $tasks->query()
-        ->where('status_task', '=', true)
-        ->where('idcategory', '=', $task['category']['id'])
-        ->where('id', '=', $tasks['id'])
-        ->with('category')
-        ->first();
+        $result = $tasks->with('category')->get();
 
         if (!$tasks->wasRecentlyCreated) {
             return response([
@@ -125,7 +119,7 @@ class TaskController extends Controller
 
         return \response([
             'message' => 'Tarefa Criada',
-            'task' => new TaskResource($result)
+            'task' => TaskResource::collection($result)
         ]);
     }
 
