@@ -21,7 +21,9 @@ class TaskResource extends JsonResource
             'description' => $this->description,
             'date' => $this->dtInicio,
             'name_category' => $this->category->name,
-            'color_category' => $this->category->color
+            'color_category' => $this->category->color,
+            'icon_category' => $this->category->icon,
+            'status' => $this->status_task == 1 ? true : false
         ];
     }
 }
