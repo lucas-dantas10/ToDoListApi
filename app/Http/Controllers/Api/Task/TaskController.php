@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Task;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\TaskRequest;
+use App\Http\Requests\Task\TaskUpdateRequest;
 use App\Http\Resources\Task\TaskResource;
 use App\Models\Tasks;
 use Carbon\Carbon;
@@ -124,6 +125,29 @@ class TaskController extends Controller
     }
 
 
+     /**
+     * Update the specified resource in storage.
+     */
+    public function update(TaskUpdateRequest $request, int $id)
+    {
+        \dd($request);
+    }
+
+
+     /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(int $id)
+    {
+        $task = Tasks::findOrFail($id);
+        $task->delete();
+
+        return response([
+            'message' => 'Tarefa deletada'
+        ]);
+    }
+
+
     private function notTaskInDay(Collection $date)
     {
         if (sizeof($date) == 0) {
@@ -154,22 +178,6 @@ class TaskController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
     {
         //
     }
