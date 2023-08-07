@@ -130,7 +130,29 @@ class TaskController extends Controller
      */
     public function update(TaskUpdateRequest $request, int $id)
     {
-        \dd($request);
+        $data = $request->validated();
+        $task = Tasks::findOrFail($id);
+
+        if (!$task) {
+            return response([
+                'message' => 'Tarefa não encontrada'
+            ]);
+        }
+
+        $task->update([
+            "title" => $data['title'],
+            "description" => $data['description'],
+            "dtInicio" => $data['date'],
+            "status_task" => $data['status'],
+            "iduser" => auth()->user()->id,
+            "idcategory" => $data['id_category'], // retornar no front o id
+            "updated_at" => Carbon::now(),
+        ]);
+
+        return response([
+            'message' => 'Tarefa Atualizada',
+            'task' => new TaskResource($task)
+        ]);
     }
 
 
