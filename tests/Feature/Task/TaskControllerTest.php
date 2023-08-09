@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Task;
 
+use App\Models\Tasks;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -79,6 +80,27 @@ class TaskControllerTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertIsArray($response['task']);
+    }
+
+    public function test_update_task(): void
+    {
+        $this->do_login_user_for_get_token();
+
+        $task = Tasks::all();
+
+        $response = $this->put("/api/task/{$task[0]->id}", [
+            'id' => 1,
+            'title' => 'Test TDD',
+            'description' => 'testando update',
+            'date' => Carbon::now()->format("Y-m-d H:i:s"),
+            'id_category' => 1,
+            'status' => false,
+            'name_category' => 'Trabalho',
+            'icon_category' => 'briefcase',
+            'color_category' => '#FF9680' 
+        ]);
+
+        $response->assertStatus(200);
     }
 
     private function do_login_user_for_get_token()
