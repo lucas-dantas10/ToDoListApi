@@ -10,6 +10,7 @@ use App\Models\Tasks;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -167,6 +168,22 @@ class TaskController extends Controller
         return response([
             'message' => 'Tarefa deletada'
         ]);
+    }
+
+    public function changeStatusTask(Request $request)
+    {
+        $data = $request->validate([
+            'id' => ['required', 'numeric'],
+            'status' => ['required', Rule::in([true, false])]
+        ]);
+
+        $task = Tasks::findOrFail($data['id']);
+
+        $task->update([
+            'status_task' => $data['status'],
+        ]);
+
+        return \response()->noContent();
     }
 
 
