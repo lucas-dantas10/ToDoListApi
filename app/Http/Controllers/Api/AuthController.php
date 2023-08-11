@@ -37,31 +37,14 @@ class AuthController extends Controller
         ]);        
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(CreateLoginRequest $request)
+    public function logout()
     {
-        $data = $request->validated();
+        $user = auth()->user();
 
-        $user = User::firstOrCreate(
-            ['email' => $data['email']],
-            [
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => $data['password']
-            ]
-        );
+        $user->currentAccessToken()->delete();
 
-        if (!$user->wasRecentlyCreated) {
-            return response([
-                'message' => 'Email já está sendo utilizado'
-            ], 422);
-        }
-
-        return \response([
-            'message' => 'Usuário cadastrado'
-        ]);
+        return response()->noContent();
+        // \dd('LOGOUT');
     }
 
     public function getCurrentUser()
@@ -69,29 +52,5 @@ class AuthController extends Controller
         $user = Auth::user();
 
         return new UserResource($user);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
