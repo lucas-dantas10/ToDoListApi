@@ -79,9 +79,12 @@ class TaskController extends Controller
 
         $query = Tasks::query()
             ->where("title", "like", "%{$titleTask}%")
+            ->where("iduser", auth()->user()->id)
             ->get();
 
-        if (is_null($query)) {
+        $collectionIsEmpty = $query->count() == 0;
+
+        if ($collectionIsEmpty) {
             return response([
                 'message' => 'Não existe tarefa com esse nome'
             ], 422);
@@ -137,7 +140,7 @@ class TaskController extends Controller
         if (!$task) {
             return response([
                 'message' => 'Tarefa não encontrada'
-            ]);
+            ], 422);
         }
 
         $task->update([
@@ -186,7 +189,6 @@ class TaskController extends Controller
         return \response()->noContent();
     }
 
-
     private function notTaskInDay(Collection $date)
     {
         if (sizeof($date) == 0) {
@@ -195,29 +197,5 @@ class TaskController extends Controller
             return \false;
         }
         
-    }
-
-     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        \dd('oi');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
     }
 }
