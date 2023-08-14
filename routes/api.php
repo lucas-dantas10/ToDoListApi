@@ -19,6 +19,6 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::apiResource('task', TaskController::class);
     Route::post('tasks/filter', [TaskController::class, 'filterByDate'])->name('tasks.filter');
-    Route::post('tasks/filter/name', [TaskController::class, 'filterByName'])->name('categories.filter.name');
+    Route::post('tasks/filter/name', [TaskController::class, 'filterByName'])->name('tasks.filter.name');
     Route::post('tasks/change-status', [TaskController::class, 'changeStatusTask'])->name('change.status');
 });
