@@ -137,11 +137,11 @@ class TaskController extends Controller
         $data = $request->validated();
         $task = Tasks::findOrFail($id);
 
-        if (!$task) {
-            return response([
-                'message' => 'Tarefa não encontrada'
-            ], 422);
-        }
+        // if (!$task) {
+        //     return response([
+        //         'message' => 'Tarefa não encontrada'
+        //     ], 422);
+        // }
 
         $task->update([
             "title" => $data['title'],
