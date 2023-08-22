@@ -4,14 +4,15 @@ namespace Tests\Feature\Task;
 
 use App\Http\Resources\Task\TaskResource;
 use App\Models\Tasks;
+use App\Models\User;
 use Carbon\Carbon;
-// use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 // use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class TaskControllerTest extends TestCase
 {
-    // use RefreshDatabase;
+    use RefreshDatabase;
 
     /**
      * A basic feature test example.
