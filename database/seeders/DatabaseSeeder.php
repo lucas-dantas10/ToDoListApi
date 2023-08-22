@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Category;
+use App\Models\Tasks;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,10 +24,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\User::factory()->create([
-            'name' => 'Desenvolvimento',
-            'email' => 'desenvolvimento@example.com',
+            'name' => 'teste',
+            'email' => 'teste@example.com',
             'password' => \bcrypt('123456')
         ]);
+
+        Tasks::factory(1)->create();
 
         Category::factory(3)->create();
     }
