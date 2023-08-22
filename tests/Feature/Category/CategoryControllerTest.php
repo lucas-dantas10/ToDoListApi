@@ -3,12 +3,15 @@
 namespace Tests\Feature\Category;
 
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
 {
+
+    // use RefreshDatabase;
 
     public function test_should_be_return_all_categories_of_user_logged(): void
     {
