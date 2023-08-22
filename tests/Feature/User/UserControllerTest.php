@@ -31,12 +31,6 @@ class UserControllerTest extends TestCase
 
     public function test_should_be_return_message_of_email_already_utilize(): void 
     {
-        // $userTest = User::create([
-        //     'name' => 'Teste',
-        //     'email' => 'teste@example.com',
-        //     'password' => '12345678'
-        // ]);
-
         $response = $this->post('/api/create-account', [
             'name' => 'teste',
             'email' => 'teste@example.com',
