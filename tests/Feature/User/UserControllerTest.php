@@ -10,7 +10,7 @@ use Tests\TestCase;
 class UserControllerTest extends TestCase
 {
 
-    // use RefreshDatabase;
+    use RefreshDatabase;
     /**
      * A basic feature test example.
      */
@@ -42,5 +42,39 @@ class UserControllerTest extends TestCase
             'message' => 'Email já está sendo utilizado'
         ]);
         $response->assertStatus(422);
+    }
+
+    public function test_should_be_update_name_and_password_of_user(): void
+    {
+        $this->do_login_user_for_get_token();
+
+        $response = $this->put('/api/user/1', [
+            'name' => 'Teste Update User',
+            'password' => '12345678'
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertStatus(200);
+        $response->assertJson([
+            'message' => 'Nome e Senha atualizados'
+        ]);
+    }
+
+    public function test_should_be_return_message_of_name_already_used(): void
+    {
+        $this->do_login_user_for_get_token();
+
+        // $response = $this->put('/api/user/1', [
+        //     'name' => 'Teste Update User',
+        // ])
+    }
+
+    private function do_login_user_for_get_token()
+    {
+        $this->post('/api/login', [
+            'name' => 'lucas',
+            'email' => 'lucas@example.com',
+            'password' => '123456'
+        ]);
     }
 }
