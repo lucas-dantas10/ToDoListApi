@@ -15,6 +15,8 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::get('current-user', [AuthController::class, 'getCurrentUser'])->name('current.user');
 
+    Route::apiResource('/user', UserController::class);
+
     Route::apiResource('category', CategoryController::class);
 
     Route::apiResource('task', TaskController::class);
