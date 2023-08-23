@@ -11,7 +11,7 @@ use Tests\TestCase;
 class CategoryControllerTest extends TestCase
 {
 
-    // use RefreshDatabase;
+    use RefreshDatabase;
 
     public function test_should_be_return_all_categories_of_user_logged(): void
     {
