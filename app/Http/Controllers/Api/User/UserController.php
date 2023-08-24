@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Login\CreateLoginRequest;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -73,8 +74,9 @@ class UserController extends Controller
                 ]);
                 
                 return \response([
-                    'message' => 'Nome do usuário atualizado'
-                ], 422);
+                    'message' => 'Nome do usuário atualizado',
+                    'user' => new UserResource($user)
+                ]);
             } catch (Exception $err) {
                 throw new Exception($err->getMessage());
             }
@@ -89,12 +91,12 @@ class UserController extends Controller
 
         try {
             $user->update([
-                'name' => $data['name'],
                 'password' => $data['password'],
             ]);
     
             return \response([
-                'message' => 'Nome e Senha atualizados'
+                'message' => 'Senha atualizada',
+                'user' => new UserResource($user)
             ]);
         } catch(Exception $err) {
             throw new Exception($err->getMessage());
