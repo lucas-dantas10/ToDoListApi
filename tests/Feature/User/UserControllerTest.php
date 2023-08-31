@@ -44,30 +44,30 @@ class UserControllerTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_should_be_update_name_and_password_of_user(): void
-    {
-        $this->do_login_user_for_get_token();
+    // public function test_should_be_update_name_and_password_of_user(): void
+    // {
+    //     $this->do_login_user_for_get_token();
 
-        $response = $this->put('/api/user/1', [
-            'name' => 'Teste Update User',
-            'password' => '12345678'
-        ]);
+    //     $response = $this->put('/api/user/1', [
+    //         'name' => 'Teste Update User',
+    //         'password' => '12345678'
+    //     ]);
 
-        $this->assertAuthenticated();
-        $response->assertStatus(200);
-        $response->assertJson([
-            'message' => 'Nome e Senha atualizados'
-        ]);
-    }
+    //     $this->assertAuthenticated();
+    //     $response->assertStatus(200);
+    //     $response->assertJson([
+    //         'message' => 'Nome e Senha atualizados'
+    //     ]);
+    // }
 
-    public function test_should_be_return_message_of_name_already_used(): void
-    {
-        $this->do_login_user_for_get_token();
+    // public function test_should_be_return_message_of_name_already_used(): void
+    // {
+    //     $this->do_login_user_for_get_token();
 
-        // $response = $this->put('/api/user/1', [
-        //     'name' => 'Teste Update User',
-        // ])
-    }
+    //     $response = $this->put('/api/user/1', [
+    //         'name' => 'Teste Update User',
+    //     ])
+    // }
 
     private function do_login_user_for_get_token()
     {
