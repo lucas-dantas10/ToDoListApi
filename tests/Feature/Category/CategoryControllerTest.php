@@ -5,7 +5,6 @@ namespace Tests\Feature\Category;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
@@ -15,9 +14,9 @@ class CategoryControllerTest extends TestCase
 
     public function test_should_be_return_all_categories_of_user_logged(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
-        $response = $this->get('/api/category');
+        $response = $this->actingAs($user)->get('/api/category');
 
         $this->assertAuthenticated();
         $response->assertStatus(200);
@@ -28,9 +27,9 @@ class CategoryControllerTest extends TestCase
 
     public function test_should_be_store_category(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
-        $response = $this->post('/api/category', [
+        $response = $this->actingAs($user)->post('/api/category', [
             'name' => 'work',
             'icon' => 'briefcase', 
             'color' => '#FFFFFF'
@@ -49,9 +48,9 @@ class CategoryControllerTest extends TestCase
 
     public function test_should_be_return_message_of_category_already_exist(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
-        $response = $this->post('/api/category', [
+        $response = $this->actingAs($user)->post('/api/category', [
             'name' => 'Trabalho',
             'icon' => 'briefcase', 
             'color' => '#FFFFFF'
@@ -61,15 +60,6 @@ class CategoryControllerTest extends TestCase
         $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Você ja possui esta categoria'
-        ]);
-    }
-
-    private function do_login_user_for_get_token()
-    {
-        $this->post('/api/login', [
-            'name' => 'lucas',
-            'email' => 'lucas@example.com',
-            'password' => '123456'
         ]);
     }
 }
