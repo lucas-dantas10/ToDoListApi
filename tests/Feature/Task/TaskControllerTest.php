@@ -19,9 +19,9 @@ class TaskControllerTest extends TestCase
      */
     public function test_should_be_return_of_all_tasks_with_status_active_in_array(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
-        $response = $this->get('/api/task');
+        $response = $this->actingAs($user)->get('/api/task');
 
         $this->assertAuthenticated();
         $response->assertStatus(200);
@@ -30,23 +30,21 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_filter_of_tasks_at_today(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
         $taskCreatedForTest = Tasks::create([
             'title' => 'Teste Filter Date',
             'description' => 'Teste Filter',
             'dtInicio' =>Carbon::now(),
             'status_task' => false,
-            'iduser' => auth()->user()->id,
+            'iduser' => $user->id,
             'idcategory' => 1,
             'created_at' => Carbon::now()
         ]);
 
-        $response = $this->post('/api/tasks/filter', [
+        $response = $this->actingAs($user)->post('/api/tasks/filter', [
             'date' => Carbon::now()->toDateString(),
         ]);
-
-        $taskCreatedForTest->delete();
 
         $response->assertStatus(200);
         $this->assertAuthenticated();
@@ -55,23 +53,21 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_filter_of_tasks_at_subdate(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
         $taskCreatedForTest = Tasks::create([
             'title' => 'Teste Filter Date',
             'description' => 'Teste Filter',
             'dtInicio' => Carbon::now()->subDay(),
             'status_task' => false,
-            'iduser' => auth()->user()->id,
+            'iduser' => $user->id,
             'idcategory' => 1,
             'created_at' => Carbon::now()
         ]);
 
-        $response = $this->post('/api/tasks/filter', [
+        $response = $this->actingAs($user)->post('/api/tasks/filter', [
             'date' => Carbon::now()->subDay()->toDateString(),
         ]);
-
-        $taskCreatedForTest->delete();
 
         $this->assertAuthenticated();
         $response->assertStatus(200);
@@ -79,9 +75,9 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_return_message_that_it_does_not_have_a_task_on_the_today(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
-        $response = $this->post('/api/tasks/filter', [
+        $response = $this->actingAs($user)->post('/api/tasks/filter', [
             'date' => Carbon::now()->toDateString(),
         ]);
 
@@ -94,9 +90,9 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_return_message_that_it_does_not_have_a_task_on_the_subday(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
-        $response = $this->post('/api/tasks/filter', [
+        $response = $this->actingAs($user)->post('/api/tasks/filter', [
             'date' => Carbon::now()->subDay()->toDateString(),
         ]);
 
@@ -109,9 +105,9 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_return_filter_of_tasks_with_name_in_array_if_have_not_tasks_return_message(): void 
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
-        $response = $this->post('/api/tasks/filter/name', [
+        $response = $this->actingAs($user)->post('/api/tasks/filter/name', [
             'taskSearch' => 'Teste'
         ]);
 
@@ -126,9 +122,9 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_store_task(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
-        $response = $this->post('/api/task', [
+        $response = $this->actingAs($user)->post('/api/task', [
             'title' => fake()->name(),
             'description' => 'testando store',
             'date' => '2023-07-15 10:10:00',
@@ -150,19 +146,19 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_return_message_of_task_already_exist(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
         Tasks::create([
             'title' => 'Teste Store',
             'description' => 'testando store failed',
             'dtInicio' => '2023-07-15 10:10:00',
             'status_task' => false,
-            'iduser' => auth()->user()->id,
+            'iduser' => $user->id,
             'idcategory' => 1,
             'created_at' => Carbon::now()
         ]);
 
-        $response = $this->post('/api/task', [
+        $response = $this->actingAs($user)->post('/api/task', [
             'title' => 'Teste Store',
             'description' => 'testando store failed',
             'date' => '2023-07-15 10:10:00',
@@ -183,7 +179,7 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_update_task(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
         $task = Tasks::all();
         $dataRequest = [
@@ -198,7 +194,9 @@ class TaskControllerTest extends TestCase
             'color_category' => '#FF9680' 
         ];
 
-        $response = $this->put("/api/task/{$task[0]->id}", $dataRequest);
+        $response = $this
+            ->actingAs($user)
+            ->put("/api/task/{$task[0]->id}", $dataRequest);
 
         $this->assertAuthenticated();
         $response->assertStatus(200);
@@ -210,27 +208,33 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_filter_task_by_title(): void 
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
+
+        $task = Tasks::factory()->create();
 
         $taskSearch = [
-            'taskSearch' => 'Teste'
+            'taskSearch' => "Teste Factory",
         ];
 
-        $response = $this->post('api/tasks/filter/name', $taskSearch);
-
+        $response = $this
+            ->actingAs($user)
+            ->post('api/tasks/filter/name', $taskSearch);
+            
         $this->assertAuthenticated();
         $this->assertIsArray($response['tasks']);
     }
 
     public function test_should_return_message_that_does_not_have_a_task_with_his_name(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
         $taskSearch = [
             'taskSearch' => 'Not'
         ];
 
-        $response = $this->post('api/tasks/filter/name', $taskSearch);
+        $response = $this
+            ->actingAs($user)
+            ->post('api/tasks/filter/name', $taskSearch);
 
         $this->assertAuthenticated();
         $response->assertStatus(422);      
@@ -241,12 +245,12 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_delete_task(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
         $task = Tasks::all();
         $idTask = $task[0]->id;
 
-        $response = $this->delete("api/task/{$idTask}");
+        $response = $this->actingAs($user)->delete("api/task/{$idTask}");
 
         $this->assertAuthenticated();
         $response->assertStatus(200);
@@ -257,33 +261,26 @@ class TaskControllerTest extends TestCase
 
     public function test_should_be_change_status_of_task(): void
     {
-        $this->do_login_user_for_get_token();
+        $user = User::factory()->create();
 
-        $tasks = Tasks::create([
-            'title' => 'Teste Filter Date',
-            'description' => 'Teste Filter',
-            'dtInicio' => '2022-03-19 10:10:10',
-            'status_task' => false,
-            'iduser' => auth()->user()->id,
-            'idcategory' => 1,
-            'created_at' => Carbon::now()
-        ]);
+        $tasks = Tasks::factory()->create();
+
+        // $tasks = Tasks::create([
+        //     'title' => 'Teste Filter Date',
+        //     'description' => 'Teste Filter',
+        //     'dtInicio' => '2022-03-19 10:10:10',
+        //     'status_task' => false,
+        //     'iduser' => auth()->user()->id,
+        //     'idcategory' => 1,
+        //     'created_at' => Carbon::now()
+        // ]);
         $dataRequest = [
             'id' => $tasks->id,
             'status' => !$tasks->status_task
         ];
 
-        $response = $this->post('api/tasks/change-status', $dataRequest);
-
+        $response = $this->actingAs($user)->post('api/tasks/change-status', $dataRequest);
+        $this->assertAuthenticated();
         $response->assertNoContent();
-    }
-
-    private function do_login_user_for_get_token()
-    {
-        $this->post('/api/login', [
-            'name' => 'lucas',
-            'email' => 'lucas@example.com',
-            'password' => '123456'
-        ]);
     }
 }
