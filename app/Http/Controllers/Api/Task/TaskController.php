@@ -41,7 +41,11 @@ class TaskController extends Controller
         $subDate = Carbon::now()->subDay()->toDateString();
 
         if ($dateRequest['date'] === $currentDate) {
-            $data = $tasks->where('dtInicio', 'like', "%{$currentDate}%")->with('category')->get();
+            $data = $tasks
+                ->where('dtInicio', 'like', "%{$currentDate}%")
+                ->where('iduser', auth()->user()->id)
+                ->with('category')
+                ->get();
 
             if ($this->notTaskInDay($data)) {
                 return \response([
@@ -55,7 +59,10 @@ class TaskController extends Controller
         }
 
         if ($dateRequest['date'] === $subDate) {
-            $data = $tasks->where('dtInicio', 'like', "%{$subDate}%")->get();
+            $data = $tasks
+                ->where('dtInicio', 'like', "%{$subDate}%")
+                ->where('iduser', auth()->user()->id)
+                ->get();
 
             if ($this->notTaskInDay($data)) {
                 return \response([
