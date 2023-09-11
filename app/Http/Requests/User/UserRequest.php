@@ -24,13 +24,16 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['max:100'],
+            'name' => ['max:100', 'string'],
             'password' => [Password::min(8)]
         ];
     }
 
     public function messages() {
         return [
+            'name.string' => 'O campo de nome não pode estar vazio',
+            'name.max' => 'O campo de nome deve conter até 100 caracteres',
+            'password.string' => 'O campo de senha não pode estar vazio',
             'password.min' => 'O campo de senha deve conter pelo menos 8 caracteres'
         ];
     }
