@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Login\CreateLoginRequest;
+use App\Http\Requests\User\UserRequest;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Carbon\Carbon;
@@ -52,12 +53,9 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(UserRequest $request, int $id)
     {
-        $data = $request->validate([
-            'name' => ['max:100'],
-            'password' => [Password::min(8)]
-        ]);
+        $data = $request->all();
 
         $user = User::findOrfail($id);
 
