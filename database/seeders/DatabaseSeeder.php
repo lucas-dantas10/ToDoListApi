@@ -5,6 +5,9 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Category;
+use App\Models\Priority;
+use App\Models\Schedule;
+use App\Models\Status;
 use App\Models\Tasks;
 use Illuminate\Database\Seeder;
 
@@ -15,24 +18,76 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
         \App\Models\User::factory()->create([
-            'id' => 2,
-            'name' => 'lucas',
-            'email' => 'lucas@exampleto.com',
-            'password' => \bcrypt('123456')
+            'id' => 1,
+            'name' => 'user1',
+            'email' => 'user1@example.com',
+            'password' => \bcrypt('user123')
         ]);
 
-        \App\Models\User::factory()->create([
-            'id' => 3,
-            'name' => 'teste',
-            'email' => 'teste@example.com',
-            'password' => \bcrypt('123456')
-        ]);
+        Status::factory()->create(
+            [
+                'type' => 'Fazer',
+                'icon' => 'bi-circle'
+            ],
+        );
 
-        Tasks::factory(1)->create();
+        Status::factory()->create(
+            [
+                'type' => 'Em progresso',
+                'icon' => 'co-clock'
+            ],
+        );
+        
+        Status::factory()->create(
+            [
+                'type' => 'Feito',
+                'icon' => 'bi-check-2-circle'
+            ],
+        );
 
-        Category::factory(3)->create();
+        Status::factory()->create(
+            [
+                'type' => 'Cancelado',
+                'icon' => 'bi-x-circle'
+            ],
+        );
+
+        Priority::factory()->create(
+            [
+                'type' => 'Alta',
+                'icon' => 'bi-arrow-up'
+            ],
+        );
+
+        Priority::factory()->create(
+            [
+                'type' => 'Baixa',
+                'icon' => 'bi-arrow-down'
+            ],
+        );
+
+        Priority::factory()->create(
+            [
+                'type' => 'Média',
+                'icon' => 'bi-arrow-right'
+            ],
+        );
+
+        Schedule::factory()->create(
+            [
+                'type' => 'Segunda a Sexta',
+            ],
+        );
+
+        Schedule::factory()->create(
+            [
+                'type' => 'Todos os dias',
+            ],
+        );
+
+        // Tasks::factory(1)->create();
+
+        // Category::factory(3)->create();
     }
 }
