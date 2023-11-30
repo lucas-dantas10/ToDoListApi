@@ -25,14 +25,11 @@ class TaskUpdateRequest extends FormRequest
     {
         return [
             'id' => ['required', 'numeric'],
-            'id_category' => ['numeric'],
             'title' => ['required', 'max:100'],
             'description' => ['required', 'max:255'],
-            'date' => ['required', 'date_format:Y-m-d H:i:s'],
-            'status' => ['required', Rule::in([true, false])],
-            'name_category' => ['required', 'max:10'],
-            'icon_category' => ['required', 'max:150'],
-            'color_category' => ['required', 'max:150']
+            'category' => ['required', 'array'],
+            'status' =>  ['required', 'array'],
+            'priority' =>  ['required', 'array'],
         ];
     }
 }

@@ -24,8 +24,6 @@ class CategoryRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:10'],
-            'icon' => ['required', 'max:150'],
-            'color' => ['required', 'max:150']
         ];
     }
 

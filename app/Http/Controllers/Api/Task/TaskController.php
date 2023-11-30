@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Task;
 
@@ -8,9 +8,6 @@ use App\Http\Requests\Task\TaskUpdateRequest;
 use App\Http\Resources\Task\TaskResource;
 use App\Models\Tasks;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -19,87 +16,33 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Tasks::where('iduser', auth()->user()->id)   
-            ->with('category')
-            ->orderBy('title', 'desc')
-            ->get();
+        $perPage = request('per_page', 5);
+        $search = request('search', '');
+        $sortField = request('sort_field', 'title');
+        $sortDirection = request('sort_direction', 'desc');
+        $status = request('status', 0);
+        $priority = request('priority', 0);
 
-        return \response([
-            'tasks' =>  TaskResource::collection($tasks)
-        ]);
-    }
+        $query = Tasks::with(['category', 'status', 'priority', 'schedule'])
+            ->orderBy($sortField, $sortDirection)
+            ->where('iduser', auth()->user()->id)
+            ->where('title', 'like', "%{$search}%");            
 
-    public function filterByDate(Request $request) 
-    {
-        $dateRequest = $request->validate([
-            'date' => 'nullable|date_format:Y-m-d'
-        ]);
-
-        $tasks = Tasks::query();
-
-        $currentDate = Carbon::now()->toDateString();
-        $subDate = Carbon::now()->subDay()->toDateString();
-
-        if ($dateRequest['date'] === $currentDate) {
-            $data = $tasks
-                ->where('dtInicio', 'like', "%{$currentDate}%")
-                ->where('iduser', auth()->user()->id)
-                ->with('category')
-                ->get();
-
-            if ($this->notTaskInDay($data)) {
-                return \response([
-                    'message' => 'Você não tem tarefa no dia selecionado'
-                ], 422);
-            }
-
-            return \response([
-                'tasks' => TaskResource::collection($data)
-            ]);
+        if ($status != 0 || $priority != 0) {
+            $query->where(function ($query) use ($status, $priority) {
+                if ($status != 0) {
+                    $query->where('status_id', $status);
+                }
+        
+                if ($priority != 0) {
+                    $query->where('priority_id', $priority);
+                }
+            });
         }
+            
+        $paginator = $query->paginate($perPage); 
 
-        if ($dateRequest['date'] === $subDate) {
-            $data = $tasks
-                ->where('dtInicio', 'like', "%{$subDate}%")
-                ->where('iduser', auth()->user()->id)
-                ->get();
-
-            if ($this->notTaskInDay($data)) {
-                return \response([
-                    'message' => 'Você não tem tarefa no dia selecionado'
-                ], 422);
-            }
-
-            return response([
-                'tasks' => TaskResource::collection($data)
-            ]);
-        }
-    }
-
-    public function filterByName(Request $request)
-    {
-        $data = $request->validate([
-            'taskSearch' => ['max:150']
-        ]);
-
-        $titleTask = $data['taskSearch'];
-
-        $query = Tasks::query()
-            ->where("title", "like", "%{$titleTask}%")
-            ->where("iduser", auth()->user()->id)
-            ->get();
-
-        $collectionIsEmpty = $query->count() == 0;
-
-        if ($collectionIsEmpty) {
-            return response([
-                'message' => 'Não existe tarefa com esse nome'
-            ], 422);
-        }
-
-        return response([
-            'tasks' => TaskResource::collection($query)
-        ]);
+        return TaskResource::collection($paginator);
     }
 
     /**
@@ -107,23 +50,22 @@ class TaskController extends Controller
      */
     public function store(TaskRequest $request)
     {
-        $task = $request->validated();
-        $tasks = Tasks::firstOrCreate([
-            'title' => $task['title'],
-            'dtInicio' => $task['date'],
+        $taskForRegister = $request->validated();
+
+        $task = Tasks::firstOrCreate([
+            'title' => $taskForRegister['title'],
         ], [
-            'title' => $task['title'],
-            'description' => $task['description'],
-            'dtInicio' => $task['date'],
+            'title' => $taskForRegister['title'],
+            'description' => $taskForRegister['description'],
             'iduser' => auth()->user()->id,
-            'status_task' => false,
-            'idcategory' => $task['category']['id'],
+            'status_id' => $taskForRegister['status'],
+            'priority_id' => $taskForRegister['priority'],
+            'schedule_id' => $taskForRegister['schedule'],
+            'idcategory' => $taskForRegister['category'],
             'created_at' => Carbon::now()
         ]);
 
-        $result = $tasks->with('category')->get();
-
-        if (!$tasks->wasRecentlyCreated) {
+        if (!$task->wasRecentlyCreated) {
             return response([
                 'message' => 'Esta Tarefa ja existe'
             ], 422);
@@ -131,7 +73,6 @@ class TaskController extends Controller
 
         return \response([
             'message' => 'Tarefa Criada',
-            'task' => TaskResource::collection($result)
         ]);
     }
 
@@ -144,19 +85,12 @@ class TaskController extends Controller
         $data = $request->validated();
         $task = Tasks::findOrFail($id);
 
-        // if (!$task) {
-        //     return response([
-        //         'message' => 'Tarefa não encontrada'
-        //     ], 422);
-        // }
-
         $task->update([
             "title" => $data['title'],
             "description" => $data['description'],
-            "dtInicio" => $data['date'],
-            "status_task" => $data['status'],
-            "iduser" => auth()->user()->id,
-            "idcategory" => $data['id_category'], // retornar no front o id
+            "idcategory" => $data['category']["id"],
+            "status_id" => $data["status"]["id"],
+            "priority_id" => $data["priority"]["id"],
             "updated_at" => Carbon::now(),
         ]);
 
@@ -178,31 +112,5 @@ class TaskController extends Controller
         return response([
             'message' => 'Tarefa deletada'
         ]);
-    }
-
-    public function changeStatusTask(Request $request)
-    {
-        $data = $request->validate([
-            'id' => ['required', 'numeric'],
-            'status' => ['required', Rule::in([true, false])]
-        ]);
-
-        $task = Tasks::findOrFail($data['id']);
-
-        $task->update([
-            'status_task' => $data['status'],
-        ]);
-
-        return \response()->noContent();
-    }
-
-    private function notTaskInDay(Collection $date)
-    {
-        if (sizeof($date) == 0) {
-            return true;
-        } else {
-            return \false;
-        }
-        
     }
 }

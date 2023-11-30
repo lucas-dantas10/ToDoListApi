@@ -34,12 +34,10 @@ class CategoryController extends Controller
         ], [
             'name' => $data['name'],
             'user_id' => auth()->user()->id,
-            'icon' => $data['icon'],
-            'color' => $data['color'],
+            'icon' => '',
+            'color' => '',
             'status_category' => true
         ]);
-
-        // \dd($category);
 
         if (!$category->wasRecentlyCreated) {
             return \response([

@@ -25,8 +25,10 @@ class TaskRequest extends FormRequest
         return [
             'title' => ['required', 'max:100'],
             'description' => ['required', 'max:255'],
-            'date' => ['required' , 'date_format:Y-m-d H:i:s'],
-            'category' => ['required']
+            'status' => ['required', 'numeric'],
+            'priority' => ['required', 'numeric'],
+            'schedule' => ['required', 'numeric'],
+            'category' => ['required', 'numeric'],
         ];
     }
 }
