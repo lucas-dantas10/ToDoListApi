@@ -19,9 +19,10 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
 
-        // $remember = $credentials['remember'] ?? false
+        $remember = $credentials['remember'] ?? false;
+        unset($credentials['remember']);
 
-        if (!Auth::attempt($credentials)) {
+        if (!Auth::attempt($credentials, $remember)) {
             return \response([
                 "message" => "Usuário ou Senha está incorreto"
             ], 422);
