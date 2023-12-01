@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Task;
 
+use App\Enums\ScheduleType;
+use App\Helper\VerifyTaskOfDay;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\TaskRequest;
 use App\Http\Requests\Task\TaskUpdateRequest;
@@ -26,7 +28,7 @@ class TaskController extends Controller
         $query = Tasks::with(['category', 'status', 'priority', 'schedule'])
             ->orderBy($sortField, $sortDirection)
             ->where('iduser', auth()->user()->id)
-            ->where('title', 'like', "%{$search}%");            
+            ->where('title', 'like', "%{$search}%");  
 
         if ($status != 0 || $priority != 0) {
             $query->where(function ($query) use ($status, $priority) {
@@ -38,6 +40,10 @@ class TaskController extends Controller
                     $query->where('priority_id', $priority);
                 }
             });
+        }
+
+        if (!VerifyTaskOfDay::isBusinessDay()) {
+            $query->where('schedule_id', ScheduleType::everyday->value);
         }
             
         $paginator = $query->paginate($perPage); 
