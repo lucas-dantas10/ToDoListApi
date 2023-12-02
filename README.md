@@ -1,66 +1,208 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TodoListApi
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Descrição: O TodoListAPI é uma API para gerenciamento de Tarefa.
 
-## About Laravel
+# Endpoint: Login
+### Descrição: Este endpoint é utilizado para autenticar um usuário e obter um token de acesso para futuras requisições autenticadas.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Rota: POST api/login
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Parâmetros da Requisição:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```json
+email (string, obrigatório): O e-mail do usuário.
+password (string, obrigatório): A senha do usuário.
+remember (boolean, opcional): Opção para manter a sessão do usuário ativa.
 
-## Learning Laravel
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Exemplo de Requisição:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```json
+{
+  "email": "usuario@example.com",
+  "password": "senha123",
+  "remember": true
+}
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
 
-## Laravel Sponsors
+## Resposta de Sucesso:
+### Caso a autenticação seja bem-sucedida, a resposta será um token de acesso e informações do usuário.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```json
+{
+  "token": "token_de_acesso",
+  "user": {
+    "usuário"
+  }
+}
 
-### Premium Partners
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Resposta de Erro:
+Caso a autenticação falhe, a resposta terá um status 422 (Unprocessable Entity) com a mensagem de erro.
 
-## Contributing
+```json
+{
+  "message": "Usuário ou Senha está incorreto"
+}
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Endpoint: Logout
 
-## Security Vulnerabilities
+### Descrição: Este endpoint é utilizado para encerrar a sessão do usuário, invalidando o token de acesso utilizado para autenticação.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Rota: POST api/logout
 
-## License
+## Parâmetros da Requisição:
+### Este endpoint não requer parâmetros na requisição. A autenticação é realizada através do token enviado no cabeçalho da requisição.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Exemplo de Requisição:
+
+``` json
+// Cabeçalho da Requisição
+{
+  "Authorization": "Bearer token_de_acesso"
+}
+
+```
+
+## Resposta de Sucesso:
+### Caso o logout seja bem-sucedido, a resposta será um status 204 (No Content), indicando que a sessão foi encerrada com sucesso.
+
+
+# Endpoint: Obter Usuário Atual
+
+### Descrição: Este endpoint é utilizado para obter as informações do usuário autenticado no momento. 
+
+## Rota: GET /api/current-user
+
+## Parâmetros da Requisição:
+### Este endpoint não requer parâmetros na requisição. A autenticação é realizada através do token enviado no cabeçalho da requisição.
+
+## Exemplo de Requisição:
+
+``` json
+// Cabeçalho da Requisição
+{
+  "Authorization": "Bearer token_de_acesso"
+}
+
+```
+
+## Resposta de Sucesso:
+### Caso a requisição seja bem-sucedida, a resposta será um objeto contendo as informações do usuário.
+
+``` json
+{
+  "data": {
+    // Informações do usuário (consulte a documentação do UserController para detalhes)
+  }
+}
+```
+
+
+
+# Endpoint: Criar Conta de Usuário
+
+### Descrição: Este endpoint é utilizado para criar uma nova conta de usuário.
+
+## Rota: POST /api/create-account
+
+## Parâmetros da Requisição:
+
+``` json
+name (string, obrigatório): Nome do usuário.
+email (string, obrigatório): E-mail do usuário.
+password (string, obrigatório): Senha do usuário.
+
+```
+
+## Exemplo de Requisição:
+
+``` json
+{
+  "name": "Nome do Usuário",
+  "email": "usuario@example.com",
+  "password": "senha123"
+}
+```
+
+## Resposta de Sucesso:
+### Caso a conta seja criada com sucesso, a resposta será um status 200 (OK) com a mensagem correspondente.
+
+``` json
+{
+  "message": "Usuário cadastrado"
+}
+```
+
+## Resposta de Erro:
+### Caso o e-mail já esteja sendo utilizado, a resposta terá um status 422 (Unprocessable Entity) com a mensagem de erro.
+
+``` json
+{
+  "message": "Email já está sendo utilizado"
+}
+```
+
+
+# Endpoint: Atualizar Usuário
+
+### Descrição: Este endpoint é utilizado para atualizar as informações de um usuário existente.
+
+## Rota: PUT /api/user/{id}
+
+## Parâmetros da Requisição:
+
+``` json
+name (string, opcional): Novo nome do usuário.
+password (string, opcional): Nova senha do usuário.
+```
+
+## Exemplo de Requisição:
+
+``` json
+// Cabeçalho da Requisição
+{
+  "Authorization": "Bearer token_de_acesso"
+}
+
+// Corpo da Requisição
+{
+  "name": "Novo Nome",
+  "password": "novaSenha123"
+}
+```
+
+## Resposta de Sucesso:
+### Caso a atualização seja bem-sucedida, a resposta será um status 200 (OK) com a mensagem correspondente e as informações atualizadas do usuário.
+
+``` json
+{
+  "message": "Nome do usuário atualizado",
+  "user": {
+    // Informações do usuário atualizadas (consulte a documentação do UserController para detalhes)
+  }
+}
+
+OU
+
+{
+  "message": "Senha atualizada",
+  "user": {
+    // Informações do usuário atualizadas (consulte a documentação do UserController para detalhes)
+  }
+}
+
+```
+
+## Resposta de Erro:
+
+``` json
+Se o novo nome já estiver sendo utilizado, a resposta terá um status 422 (Unprocessable Entity) com a mensagem de erro.
+Se a nova senha já estiver sendo utilizada, a resposta terá um status 422 (Unprocessable Entity) com a mensagem de erro.
+```
