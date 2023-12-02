@@ -40,8 +40,8 @@ remember (boolean, opcional): Opção para manter a sessão do usuário ativa.
 
 ```
 
-Resposta de Erro:
-Caso a autenticação falhe, a resposta terá um status 422 (Unprocessable Entity) com a mensagem de erro.
+## Resposta de Erro:
+### Caso a autenticação falhe, a resposta terá um status 422 (Unprocessable Entity) com a mensagem de erro.
 
 ```json
 {
