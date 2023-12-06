@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             Tasks::query()->update(['status_id' => 1]);
-        })->daily();
+        })->dailyAt("00:00");
     }
 
     /**
